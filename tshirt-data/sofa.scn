@@ -1,0 +1,77 @@
+<!-- Mechanical MassSpring Group Basic Example -->
+<Node name="root" dt="0.02">
+    <RequiredPlugin name="Sofa.Component.Collision.Detection.Algorithm"/>
+    <RequiredPlugin name="Sofa.Component.Collision.Detection.Intersection"/>
+    <RequiredPlugin name="Sofa.Component.Collision.Geometry"/>
+    <RequiredPlugin name="Sofa.Component.Collision.Response.Contact"/>
+    <RequiredPlugin name="Sofa.Component.Constraint.Projective"/>
+    <RequiredPlugin name="Sofa.Component.IO.Mesh"/>
+    <RequiredPlugin name="Sofa.Component.LinearSolver.Iterative"/>
+    <RequiredPlugin name="Sofa.Component.Mapping.Linear"/>
+    <RequiredPlugin name="Sofa.Component.Mass"/>
+    <RequiredPlugin name="Sofa.Component.ODESolver.Backward"/>
+    <RequiredPlugin name="Sofa.Component.SolidMechanics.FEM.Elastic"/>
+    <RequiredPlugin name="Sofa.Component.StateContainer"/>
+    <RequiredPlugin name="Sofa.Component.Topology.Container.Constant"/>
+    <RequiredPlugin name="Sofa.Component.Topology.Container.Dynamic"/>
+    <RequiredPlugin name="Sofa.Component.Visual"/>
+    <RequiredPlugin name="Sofa.GL.Component.Rendering3D"/>
+    <RequiredPlugin name="Sofa.Component.IO.Mesh"/>
+    
+    <DefaultAnimationLoop/>
+    <VisualStyle displayFlags="showBehaviorModels showMappings" />
+    <CollisionPipeline verbose="0" />
+    <BruteForceBroadPhase/>
+    <BVHNarrowPhase/>
+    <CollisionResponse response="PenalityContactForceField" />
+    <MinProximityIntersection name="Proximity" alarmDistance="0.8" contactDistance="0.5" />
+    <Node name="tshirt">
+        <EulerImplicitSolver  rayleighStiffness="0.1" rayleighMass="0.1" />
+        <CGLinearSolver iterations="25" tolerance="1e-5" threshold="1e-5"/>
+        <MeshGmshLoader name="loader" filename="mesh/tshirt_0.msh" />
+        <MeshTopology src="@loader" />
+        <MechanicalObject name="dofs" src="@loader" scale="10" />
+        <include href="Objects/TriangleSetTopology.xml" src="@loader" />
+        <UniformMass vertexMass="1" />
+        <FixedProjectiveConstraint indices="38 39 40 41 42 43 123 124 800 1100" />
+        <TriangleFEMForceField name="FEM" youngModulus="100000" poissonRatio="0.3" method="large" />
+        <TriangleCollisionModel />
+        
+        <MeshExporter
+            name="tshirtMechExport"
+            filename="out/tshirt_mech"
+            format="obj"
+            listening="true"
+            printLog="true"
+            exportEveryNumberOfSteps="10"
+            position="@dofs.position"
+            triangles="true" />
+        
+        <!-- 使用 WriteState 记录顶点237坐标序列 -->
+        <Node name="Vertex237Tracker">
+            <MechanicalObject name="vertex237DOF" size="1" />
+            <SubsetMapping 
+                name="subsetMapping"
+                template="Vec3d,Vec3d"
+                input="@../dofs"
+                output="@vertex237DOF"
+                indices="237" />
+            <WriteState
+                name="vertex237Writer"
+                filename="out/vertex_237_trajectory.txt"
+                listening="true"
+                printLog="false"
+                period="0.02"
+                time="0"
+                writeX="true"
+                dof="@vertex237DOF"
+                format="ASCII"
+                writeVector="true" />
+        </Node>
+        
+        <Node name="Visu">
+            <OglModel name="Visual" color="red" />
+            <IdentityMapping input="@.." output="@Visual" />
+        </Node>
+    </Node>
+</Node>
