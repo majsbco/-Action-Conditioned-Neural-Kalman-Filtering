@@ -1,0 +1,1 @@
+Official PyTorch implementation of "Action-Conditioned Neural Kalman Filtering for Robust Spatio-Temporal State Estimation of Deformable Objects". This repository features a hybrid PointNet++ & GRU architecture for latent space smoothing, specifically designed to handle perceptual noise and occlusions in robotic manipulation tasks.
