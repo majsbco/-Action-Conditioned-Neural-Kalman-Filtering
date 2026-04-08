@@ -3,7 +3,6 @@ Official PyTorch implementation of "Action-Conditioned Neural Kalman Filtering f
 The Action-Conditioned Neural Kalman Filtering (AC-LKF) framework is designed to bridge the gap between geometric feature extraction and recursive state estimation. As illustrated in the system architecture (Figure 1), the pipeline begins with a Spatio-Temporal Encoder that leverages a PointNet++ backbone. This stage transforms raw, unordered point clouds into a compact latent observation space, effectively capturing the essential geometric features while filtering out localized measurement noise.
 
 <img width="5882" height="5201" alt="figure1" src="https://github.com/user-attachments/assets/15bb8bf6-b817-4f7d-9d0b-1e01e8a78f46" />
-                                                      Figure1
 
 At the heart of our approach is the Recurrent Dynamics State Update module. Unlike vanilla RNNs, AC-LKF explicitly incorporates robotic kinematics by encoding the end-effector's grasp state as a control prior. This action-conditioned latent representation is then processed through a gated fusion mechanism, which adaptively weights the transition dynamics and the current observations. By doing so, the model maintains a consistent hidden state trajectory even during periods of severe occlusion or sensor instability. Finally, a Shape Decoder reconstructs the full-resolution deformable mesh from the smoothed latent state, ensuring spatio-temporal coherence across the entire manipulation sequence.
 
