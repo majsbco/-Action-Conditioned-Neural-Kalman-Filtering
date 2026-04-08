@@ -1,1 +1,13 @@
 Official PyTorch implementation of "Action-Conditioned Neural Kalman Filtering for Robust Spatio-Temporal State Estimation of Deformable Objects". This repository features a hybrid PointNet++ & GRU architecture for latent space smoothing, specifically designed to handle perceptual noise and occlusions in robotic manipulation tasks.
+
+The Action-Conditioned Neural Kalman Filtering (AC-LKF) framework is designed to bridge the gap between geometric feature extraction and recursive state estimation. As illustrated in the system architecture (Figure 1), the pipeline begins with a Spatio-Temporal Encoder that leverages a PointNet++ backbone. This stage transforms raw, unordered point clouds into a compact latent observation space, effectively capturing the essential geometric features while filtering out localized measurement noise.
+
+<img width="5882" height="5201" alt="figure1" src="https://github.com/user-attachments/assets/15bb8bf6-b817-4f7d-9d0b-1e01e8a78f46" />
+
+At the heart of our approach is the Recurrent Dynamics State Update module. Unlike vanilla RNNs, AC-LKF explicitly incorporates robotic kinematics by encoding the end-effector's grasp state as a control prior. This action-conditioned latent representation is then processed through a gated fusion mechanism, which adaptively weights the transition dynamics and the current observations. By doing so, the model maintains a consistent hidden state trajectory even during periods of severe occlusion or sensor instability. Finally, a Shape Decoder reconstructs the full-resolution deformable mesh from the smoothed latent state, ensuring spatio-temporal coherence across the entire manipulation sequence.
+
+To validate the efficacy of the latent smoothing, we analyzed the temporal evolution of the object's state using Principal Component Analysis (PCA). Figure 2 depicts the trajectories of the top two principal components over a continuous sequence of 700 frames.
+
+<img width="7947" height="5843" alt="figure5" src="https://github.com/user-attachments/assets/f54545b6-0f20-428a-bb2f-59b7e40ee3b4" />
+
+The results demonstrate that our proposed model (M4) significantly outperforms standard supervised smoothing and traditional constant-velocity Kalman filters. By coupling the grasp point information with the recurrent update, AC-LKF successfully suppresses high-frequency temporal jitter, producing a latent trajectory that is both smooth and physically plausible. The high variance ratio captured by these components (exceeding 90%) further confirms that our neural filter effectively retains the dominant deformation modes while discarding perceptual artifacts. This stability is a key requirement for closed-loop robotic control in complex, deformable environments.
